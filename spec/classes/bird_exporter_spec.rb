@@ -19,7 +19,11 @@ describe 'prometheus::bird_exporter' do
         it { is_expected.to contain_file('/opt/bird_exporter-1.2.5.linux-amd64/bird_exporter') }
         it { is_expected.to contain_file('/opt/bird_exporter-1.2.5.linux-amd64').with_ensure('directory') }
 
-        it { is_expected.to contain_systemd__unit_file('bird_exporter.service') }
+        if facts[:os]['release']['major'].to_i == 6
+          it { is_expected.to contain_file('/etc/init.d/bird_exporter') }
+        else
+          it { is_expected.to contain_systemd__unit_file('bird_exporter.service') }
+        end
 
         if facts[:os]['family'] == 'RedHat'
           it { is_expected.not_to contain_file('/etc/sysconfig/bird_exporter') }
