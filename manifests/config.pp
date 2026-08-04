@@ -6,6 +6,8 @@ class prometheus::config {
 
   $enable_tracing = $prometheus::server::enable_tracing
 
+  $target_address = $prometheus::web_listen_address.lest || { 'localhost:9090' }
+
   if $prometheus::server::include_default_scrape_configs {
     $default_scrape_configs = [
       {
@@ -14,7 +16,7 @@ class prometheus::config {
         'scrape_timeout'  => '10s',
         'static_configs'  => [
           {
-            'targets' => ['localhost:9090'],
+            'targets' => [$target_address],
             'labels'  => {
               'alias' => 'Prometheus',
             },
