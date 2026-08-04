@@ -217,6 +217,39 @@ describe 'prometheus::node_exporter' do
           it { is_expected.to contain_prometheus__daemon('node_exporter').with(options: '--web.listen-address=\':9101\'') }
         end
       end
+
+      context 'with non default scrape address' do
+        let(:params) do
+          {
+            listen_address: '127.0.0.1',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+
+        if facts[:os]['name'] == 'Archlinux'
+          it { is_expected.to contain_prometheus__daemon('prometheus-node-exporter').with(options: '--web.listen-address=\'127.0.0.1:9100\'') }
+        else
+          it { is_expected.to contain_prometheus__daemon('node_exporter').with(options: '--web.listen-address=\'127.0.0.1:9100\'') }
+        end
+      end
+
+      context 'with non default scrape address and port' do
+        let(:params) do
+          {
+            listen_address: '10.1.2.3',
+            scrape_port:    1234,
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+
+        if facts[:os]['name'] == 'Archlinux'
+          it { is_expected.to contain_prometheus__daemon('prometheus-node-exporter').with(options: '--web.listen-address=\'10.1.2.3:1234\'') }
+        else
+          it { is_expected.to contain_prometheus__daemon('node_exporter').with(options: '--web.listen-address=\'10.1.2.3:1234\'') }
+        end
+      end
     end
   end
 end
